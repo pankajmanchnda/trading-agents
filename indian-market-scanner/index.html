@@ -1,42 +1,46 @@
-
 <!DOCTYPE html>
-<div class="topbar">
-  <a class="back-link" href="https://pankajmanchnda.github.io/trading-agents/">
-    ← Back to Trading Agents Dashboard
-  </a>
-</div>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Indian Market Scanner</title>
+
   <style>
-    .topbar {
-  max-width: 1150px;
-  margin: 0 auto 24px auto;
-}
-
-.back-link {
-  color: #38bdf8;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 15px;
-}
-
-.back-link:hover {
-  color: #7dd3fc;
-}
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: #0f172a;
       color: white;
       min-height: 100vh;
+      padding: 30px;
+    }
+
+    .topbar {
+      max-width: 1150px;
+      margin: 0 auto 24px auto;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      padding: 10px 0;
+    }
+
+    .back-link:hover {
+      color: #7dd3fc;
+    }
+
+    .page-wrap {
+      min-height: calc(100vh - 90px);
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 30px;
     }
 
     .box {
@@ -58,7 +62,7 @@
       line-height: 1.6;
     }
 
-    a {
+    .button {
       display: inline-block;
       margin-top: 25px;
       padding: 12px 18px;
@@ -68,16 +72,34 @@
       border-radius: 10px;
       font-weight: bold;
     }
+
+    .button:hover {
+      background: #7dd3fc;
+    }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>🇮🇳 Indian Market Scanner</h1>
-    <p>
-      This section will contain the Indian equity swing-trading scanner,
-      ranked trade candidates, scores, priorities, and risk metrics.
-    </p>
-    <a href="../">Back to Dashboard</a>
+  <div class="topbar">
+    <a class="back-link" href="https://pankajmanchnda.github.io/trading-agents/">
+      ← Back to Trading Agents Dashboard
+    </a>
   </div>
+
+  <main class="page-wrap">
+    <div class="box">
+      <h1>🇮🇳 Indian Market Scanner</h1>
+
+      <p>
+        This section will contain the Indian equity swing-trading scanner,
+        ranked trade candidates, scores, priorities, volume strength,
+        expected upside, and risk metrics.
+      </p>
+
+      <a class="button" href="https://pankajmanchnda.github.io/trading-agents/">
+        Back to Dashboard
+      </a>
+    </div>
+  </main>
 </body>
 </html>
