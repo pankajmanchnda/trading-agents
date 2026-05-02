@@ -4,64 +4,304 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Performance Dashboard</title>
+
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: #0f172a;
-      color: white;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #ffffff;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 35px 20px;
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      margin-bottom: 30px;
+    }
+
+    .back-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .header {
       text-align: center;
-      padding: 30px;
+      margin-bottom: 35px;
     }
 
-    .box {
-      max-width: 750px;
-      background: rgba(255,255,255,0.08);
-      padding: 35px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.15);
+    .header h1 {
+      font-size: 40px;
+      margin-bottom: 12px;
     }
 
-    h1 {
-      font-size: 36px;
-      margin-bottom: 15px;
-    }
-
-    p {
+    .header p {
       color: #cbd5e1;
       font-size: 18px;
       line-height: 1.6;
+      max-width: 760px;
+      margin: 0 auto;
     }
 
-    a {
-      display: inline-block;
-      margin-top: 25px;
-      padding: 12px 18px;
-      background: #38bdf8;
-      color: #0f172a;
-      text-decoration: none;
-      border-radius: 10px;
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .metric-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .metric-card h3 {
+      color: #cbd5e1;
+      font-size: 15px;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .metric-card .value {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .metric-card .note {
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      padding: 26px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .section h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .section p {
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      font-size: 14px;
+    }
+
+    th {
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.08);
+    }
+
+    td {
+      color: #cbd5e1;
+    }
+
+    .status-open {
+      color: #facc15;
       font-weight: bold;
     }
 
-    a:hover {
-      background: #7dd3fc;
+    .status-win {
+      color: #86efac;
+      font-weight: bold;
+    }
+
+    .status-loss {
+      color: #fca5a5;
+      font-weight: bold;
+    }
+
+    .disclaimer {
+      margin-top: 25px;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: #fde68a;
+      padding: 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 31px;
+      }
+
+      .header p {
+        font-size: 16px;
+      }
+
+      body {
+        padding: 25px 15px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>📊 Performance Dashboard</h1>
-    <p>
-      This section will track scanner performance, including top trade picks,
-      10-day outcomes, win rate, average return, highest gainers, failed setups,
-      and historical trade performance.
-    </p>
-    <a href="../">Back to Dashboard</a>
+  <div class="container">
+
+    <div class="topbar">
+      <a class="back-link" href="../">← Back to Trading Agents Dashboard</a>
+    </div>
+
+    <div class="header">
+      <h1>📊 Performance Dashboard</h1>
+      <p>
+        This page tracks the performance of scanner-generated trade ideas over a 10-trading-day swing window.
+        The goal is to validate whether the scanners are producing useful, repeatable, and risk-aware trade candidates.
+      </p>
+    </div>
+
+    <div class="summary-grid">
+      <div class="metric-card">
+        <h3>Total Trades Tracked</h3>
+        <div class="value">0</div>
+        <div class="note">Will update once scanner picks are logged.</div>
+      </div>
+
+      <div class="metric-card">
+        <h3>Win Rate</h3>
+        <div class="value">--</div>
+        <div class="note">Calculated after completed 10-day trade windows.</div>
+      </div>
+
+      <div class="metric-card">
+        <h3>Average Return</h3>
+        <div class="value">--</div>
+        <div class="note">Average return across closed tracked trades.</div>
+      </div>
+
+      <div class="metric-card">
+        <h3>Active Tracking Window</h3>
+        <div class="value">10 Days</div>
+        <div class="note">Designed for short-term swing-trade validation.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Current Tracking Logic</h2>
+      <p>
+        Each day, the top scanner picks can be logged and tracked for up to 10 trading days.
+        Performance should be measured using entry price, highest price reached, closing price after the tracking period,
+        drawdown, target achievement, and stop-loss breach.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date Added</th>
+              <th>Market</th>
+              <th>Symbol</th>
+              <th>Entry Price</th>
+              <th>Target</th>
+              <th>Stop Loss</th>
+              <th>10-Day Result</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pending</td>
+              <td>Indian / US</td>
+              <td>Pending</td>
+              <td>Pending</td>
+              <td>Pending</td>
+              <td>Pending</td>
+              <td>Pending</td>
+              <td class="status-open">Open</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Planned Metrics</h2>
+      <p>
+        The dashboard will eventually display rolling scanner performance across approximately 60 recent trades,
+        grouped into batches so the system does not become cluttered.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Win Rate</td>
+              <td>Percentage of trades that reached target or closed positively within the tracking window.</td>
+            </tr>
+            <tr>
+              <td>Average Return</td>
+              <td>Average percentage return across completed trades.</td>
+            </tr>
+            <tr>
+              <td>Best Trade</td>
+              <td>Highest return achieved within the 10-day period.</td>
+            </tr>
+            <tr>
+              <td>Worst Trade</td>
+              <td>Largest negative move or stop-loss breach.</td>
+            </tr>
+            <tr>
+              <td>Scanner Accuracy</td>
+              <td>Comparison of top-ranked scanner picks versus lower-ranked picks.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> This dashboard is for tracking and educational review only.
+      It is not financial advice and should not be used as the sole basis for any trade.
+    </div>
+
   </div>
 </body>
 </html>
