@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
 
-  <title>Performance Dashboard</title>
+  <title>Scanner Performance Dashboard</title>
 
   <style>
     * {
@@ -57,13 +57,26 @@
       color: #94a3b8;
       font-size: 16px;
       line-height: 1.6;
-      max-width: 850px;
+      max-width: 900px;
     }
 
     .subtitle {
       color: #94a3b8;
       font-size: 14px;
       margin-top: 8px;
+    }
+
+    .debug-box {
+      display: none;
+      margin: 14px 0 18px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      background: rgba(127, 29, 29, 0.28);
+      color: #fecaca;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-wrap;
     }
 
     .refresh-panel {
@@ -160,7 +173,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1350px;
+      min-width: 1450px;
       font-size: 13px;
     }
 
@@ -236,6 +249,13 @@
       padding: 12px 0;
     }
 
+    .small-note {
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
     .disclaimer {
       margin-top: 24px;
       background: rgba(251, 191, 36, 0.10);
@@ -276,17 +296,20 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <a class="back-link" href="../">← Back to Trading Agents Dashboard</a>
+      <a class="back-link" href="https://pankajmanchnda.github.io/trading-agents/">
+        ← Back to Trading Agents Dashboard
+      </a>
     </div>
 
     <div class="header">
-      <h1>📊 Performance Dashboard</h1>
+      <h1>📊 Scanner Performance Dashboard</h1>
       <p>
         This page tracks scanner-generated trade ideas from the Indian and USA scanners.
         It measures whether each idea triggered, whether stop-loss or target was hit first,
         and whether the scanners are producing repeatable, risk-aware candidates.
       </p>
       <div class="subtitle" id="generatedLine">Loading latest scanner logs...</div>
+      <div id="debugBox" class="debug-box"></div>
     </div>
 
     <div class="refresh-panel">
@@ -325,13 +348,13 @@
       <div class="metric-card">
         <h3>India Trades</h3>
         <div class="value" id="indiaTrades">--</div>
-        <div class="note">From performance_log.csv.</div>
+        <div class="note">From Indian scanner performance log.</div>
       </div>
 
       <div class="metric-card">
         <h3>USA Trades</h3>
         <div class="value" id="usaTrades">--</div>
-        <div class="note">From performance_log_us.csv.</div>
+        <div class="note">From USA scanner performance log.</div>
       </div>
 
       <div class="metric-card">
@@ -406,6 +429,12 @@
           </tbody>
         </table>
       </div>
+
+      <div class="small-note">
+        CSV sources:
+        India → https://pankajmanchnda.github.io/swing-trading-scanner/performance_log.csv |
+        USA → https://pankajmanchnda.github.io/swing-trading-scanner-us/performance_log_us.csv
+      </div>
     </div>
 
     <div class="section">
@@ -414,6 +443,7 @@
         A win means the target was hit before the stop-loss after entry was triggered.
         A loss means the stop-loss was hit before the target after entry was triggered.
         “Pending Trigger” means the scanner idea has not yet crossed the entry trigger.
+        “Active After Trigger” means entry was triggered, but neither stop nor target has been hit yet.
         “Ambiguous” means the available candle data does not reliably show whether the stop or target happened first.
       </p>
     </div>
@@ -429,16 +459,38 @@
     const LOG_SOURCES = [
       {
         market: "India",
-        url: "../swing-trading-scanner/performance_log.csv"
+        primaryUrl: "https://pankajmanchnda.github.io/swing-trading-scanner/performance_log.csv",
+        fallbackUrls: [
+          "https://pankajmanchnda.github.io/swing-trading-scanner/performance_log.csv",
+          "/swing-trading-scanner/performance_log.csv"
+        ]
       },
       {
         market: "USA",
-        url: "../swing-trading-scanner-us/performance_log_us.csv"
+        primaryUrl: "https://pankajmanchnda.github.io/swing-trading-scanner-us/performance_log_us.csv",
+        fallbackUrls: [
+          "https://pankajmanchnda.github.io/swing-trading-scanner-us/performance_log_us.csv",
+          "/swing-trading-scanner-us/performance_log_us.csv"
+        ]
       }
     ];
 
     let allTrades = [];
     let currentFilter = "all";
+    let debugMessages = [];
+
+    function showDebug() {
+      const box = document.getElementById("debugBox");
+
+      if (!debugMessages.length) {
+        box.style.display = "none";
+        box.textContent = "";
+        return;
+      }
+
+      box.style.display = "block";
+      box.textContent = debugMessages.join("\n");
+    }
 
     function parseCSV(text) {
       const rows = [];
@@ -483,9 +535,10 @@
         return [];
       }
 
-      const headers = rows[0].map(h => h.trim());
+      const headers = rows[0].map(h => String(h || "").trim());
+
       return rows.slice(1)
-        .filter(r => r.some(cell => String(cell).trim() !== ""))
+        .filter(r => r.some(cell => String(cell || "").trim() !== ""))
         .map(r => {
           const obj = {};
           headers.forEach((h, idx) => {
@@ -497,12 +550,14 @@
 
     function numberValue(value) {
       if (value === null || value === undefined) return NaN;
+
       const cleaned = String(value)
         .replace(/[₹$,]/g, "")
         .replace(/%/g, "")
         .trim();
 
       if (cleaned === "" || cleaned.toLowerCase() === "nan") return NaN;
+
       return Number(cleaned);
     }
 
@@ -511,6 +566,32 @@
       const text = String(value);
       if (text.toLowerCase() === "nan") return "";
       return text;
+    }
+
+    function normalizeRow(row, market) {
+      return {
+        Market: market,
+        Date: row.Date || "",
+        Mode: row.Mode || "",
+        Rank: row.Rank || "",
+        Stock: row.Stock || row.Symbol || "",
+        Signal: row.Signal || "",
+        Conviction: row.Conviction || "",
+        Entry: row.Entry || row["Entry Price"] || "",
+        Stop: row.Stop || row["Stop Loss"] || "",
+        Target: row.Target || "",
+        RR: row.RR || "",
+        "Current Price": row["Current Price"] || row.Current || row.Close || "",
+        "Stop Away": row["Stop Away"] || "",
+        "Target Away": row["Target Away"] || "",
+        Status: row.Status || "",
+        "First Hit": row["First Hit"] || "",
+        "Hit Date": row["Hit Date"] || "",
+        Result: row.Result || "",
+        R: row.R || "",
+        Days: row.Days || "",
+        Notes: row.Notes || ""
+      };
     }
 
     function classifyStatus(trade) {
@@ -531,18 +612,20 @@
       const result = safeText(trade.Result);
       if (result) return result;
 
-      const status = safeText(trade.Status);
-      if (status.toLowerCase().includes("target")) return "Win";
-      if (status.toLowerCase().includes("stop")) return "Loss";
+      const status = safeText(trade.Status).toLowerCase();
+      if (status.includes("target")) return "Win";
+      if (status.includes("stop")) return "Loss";
       return "";
     }
 
     function statusClass(trade) {
       const type = classifyStatus(trade);
+
       if (type === "win") return "status-win";
       if (type === "loss") return "status-loss";
       if (type === "active") return "status-open";
       if (type === "pending") return "status-pending";
+
       return "status-neutral";
     }
 
@@ -555,46 +638,75 @@
         .replace(/'/g, "&#039;");
     }
 
-    async function fetchLog(source) {
-      const url = source.url + "?v=" + Date.now();
+    async function tryFetchCSV(url) {
+      const cacheBustedUrl = url + (url.includes("?") ? "&" : "?") + "v=" + Date.now();
 
-      try {
-        const response = await fetch(url, { cache: "no-store" });
+      const response = await fetch(cacheBustedUrl, {
+        cache: "no-store",
+        mode: "cors"
+      });
 
-        if (!response.ok) {
-          console.warn("Could not fetch:", source.url, response.status);
-          return [];
-        }
-
-        const text = await response.text();
-        const rows = parseCSV(text);
-
-        return rows.map(row => ({
-          ...row,
-          Market: source.market
-        }));
-      } catch (error) {
-        console.warn("Failed to fetch log:", source.url, error);
-        return [];
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status + " from " + url);
       }
+
+      const text = await response.text();
+
+      if (!text || !text.trim()) {
+        throw new Error("Empty CSV response from " + url);
+      }
+
+      const firstLine = text.split(/\r?\n/)[0] || "";
+
+      if (!firstLine.toLowerCase().includes("date") && !firstLine.toLowerCase().includes("stock")) {
+        throw new Error("Response does not look like CSV from " + url);
+      }
+
+      return text;
+    }
+
+    async function fetchLog(source) {
+      const urls = [source.primaryUrl, ...(source.fallbackUrls || [])];
+      const uniqueUrls = Array.from(new Set(urls));
+      const errors = [];
+
+      for (const url of uniqueUrls) {
+        try {
+          const text = await tryFetchCSV(url);
+          const rows = parseCSV(text);
+          debugMessages.push(source.market + ": loaded " + rows.length + " rows from " + url);
+
+          return rows.map(row => normalizeRow(row, source.market));
+        } catch (error) {
+          errors.push(source.market + ": " + url + " failed → " + error.message);
+        }
+      }
+
+      debugMessages.push(...errors);
+      return [];
     }
 
     async function loadData() {
+      debugMessages = [];
+
       const logs = await Promise.all(LOG_SOURCES.map(fetchLog));
       allTrades = logs.flat();
 
       allTrades.sort((a, b) => {
         const dateA = safeText(a.Date);
         const dateB = safeText(b.Date);
+
         if (dateA === dateB) {
           return numberValue(a.Rank) - numberValue(b.Rank);
         }
+
         return dateA < dateB ? 1 : -1;
       });
 
       updateSummary(allTrades);
       renderTable();
       updateGeneratedLine();
+      showDebug();
     }
 
     function updateSummary(trades) {
@@ -627,7 +739,7 @@
       document.getElementById("totalTrades").textContent = total;
       document.getElementById("winRate").textContent = winRate;
       document.getElementById("avgR").textContent = avgR;
-      document.getElementById("openPending").textContent = `${active} / ${pending}`;
+      document.getElementById("openPending").textContent = active + " / " + pending;
 
       document.getElementById("indiaTrades").textContent = india;
       document.getElementById("usaTrades").textContent = usa;
@@ -660,7 +772,7 @@
       const rows = filteredTrades();
 
       if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="21" class="empty">No trades found for this filter.</td></tr>`;
+        tbody.innerHTML = '<tr><td colspan="21" class="empty">No trades found for this filter. If totals are also zero, check the debug messages above.</td></tr>';
         return;
       }
 
@@ -726,14 +838,14 @@
       function formatTime(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
-        return `${mins}:${String(secs).padStart(2, "0")}`;
+        return mins + ":" + String(secs).padStart(2, "0");
       }
 
       function updateUi() {
         if (enabled) {
           btn.textContent = "Auto-refresh ON";
           btn.classList.add("active");
-          countdown.textContent = `Next refresh in ${formatTime(remaining)}`;
+          countdown.textContent = "Next refresh in " + formatTime(remaining);
         } else {
           btn.textContent = "Auto-refresh OFF";
           btn.classList.remove("active");
