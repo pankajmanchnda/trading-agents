@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Trading Scanner Methodology</title>
 
   <style>
@@ -14,31 +17,34 @@
     }
 
     body {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #ffffff;
+      background: #0f172a;
+      color: #e5e7eb;
       min-height: 100vh;
       padding: 35px 20px;
     }
 
     .container {
-      max-width: 1050px;
+      max-width: 1150px;
       margin: 0 auto;
     }
 
     .topbar {
-      margin-bottom: 30px;
+      margin-bottom: 28px;
     }
 
     .back-link {
       color: #38bdf8;
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 700;
       font-size: 15px;
     }
 
+    .back-link:hover {
+      color: #7dd3fc;
+    }
+
     .header {
-      text-align: center;
-      margin-bottom: 35px;
+      margin-bottom: 30px;
     }
 
     .header h1 {
@@ -47,20 +53,18 @@
     }
 
     .header p {
-      color: #cbd5e1;
-      font-size: 18px;
-      line-height: 1.6;
-      max-width: 780px;
-      margin: 0 auto;
+      color: #94a3b8;
+      font-size: 17px;
+      line-height: 1.65;
+      max-width: 920px;
     }
 
     .section {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #111827;
+      border: 1px solid #243041;
       border-radius: 18px;
-      padding: 26px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      padding: 24px;
+      margin-bottom: 20px;
     }
 
     .section h2 {
@@ -72,7 +76,33 @@
       color: #cbd5e1;
       line-height: 1.7;
       margin-bottom: 14px;
-      font-size: 16px;
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .mini-card {
+      background: #0b1220;
+      border: 1px solid #243041;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .mini-card h3 {
+      font-size: 17px;
+      margin-bottom: 9px;
+      color: #e5e7eb;
+    }
+
+    .mini-card p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 0;
     }
 
     ul {
@@ -86,53 +116,72 @@
       margin-bottom: 8px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
       margin-top: 16px;
+      min-width: 900px;
     }
 
-    .mini-card {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 20px;
+    .table-wrap {
+      overflow-x: auto;
     }
 
-    .mini-card h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
+    th, td {
+      padding: 11px;
+      text-align: left;
+      border-bottom: 1px solid #243041;
+      white-space: nowrap;
+      font-size: 14px;
     }
 
-    .mini-card p {
-      font-size: 15px;
+    th {
+      background: #0b1220;
+      color: #e2e8f0;
+    }
+
+    td {
       color: #cbd5e1;
-      margin-bottom: 0;
+    }
+
+    .highlight {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .warning {
+      margin-top: 15px;
+      background: rgba(251, 191, 36, 0.10);
+      border: 1px solid rgba(251, 191, 36, 0.30);
+      color: #fde68a;
+      padding: 15px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.6;
     }
 
     .disclaimer {
-      margin-top: 25px;
-      background: rgba(251, 191, 36, 0.12);
-      border: 1px solid rgba(251, 191, 36, 0.35);
-      color: #fde68a;
+      margin-top: 24px;
+      background: rgba(248, 113, 113, 0.10);
+      border: 1px solid rgba(248, 113, 113, 0.30);
+      color: #fecaca;
       padding: 16px;
       border-radius: 14px;
       font-size: 14px;
       line-height: 1.6;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
+      body {
+        padding: 25px 14px;
+      }
+
       .header h1 {
-        font-size: 31px;
+        font-size: 30px;
       }
 
       .header p {
-        font-size: 16px;
-      }
-
-      body {
-        padding: 25px 15px;
+        font-size: 15px;
       }
     }
   </style>
@@ -140,128 +189,242 @@
 
 <body>
   <div class="container">
-
     <div class="topbar">
-      <a class="back-link" href="../">← Back to Trading Agents Dashboard</a>
+      <a class="back-link" href="https://pankajmanchnda.github.io/trading-agents/">
+        ← Back to Trading Agents Dashboard
+      </a>
     </div>
 
     <div class="header">
       <h1>🧠 Trading Scanner Methodology</h1>
       <p>
-        The scanners are designed to identify short-term swing-trading candidates using a structured scoring model.
-        The objective is not to predict markets perfectly, but to filter for setups with better momentum, trend strength,
-        liquidity, and risk-reward structure.
+        This methodology explains how the Indian and USA scanners identify, score, rank, and track short-term trading ideas.
+        The scanners are designed as research and filtering tools. They do not predict certainty, and they do not remove market risk.
       </p>
     </div>
 
     <div class="section">
-      <h2>Core Objective</h2>
+      <h2>1. Core Objective</h2>
       <p>
-        The system looks for trade candidates that may perform over a 1-to-10 trading day horizon.
-        It is designed for swing-trade analysis, not long-term investing, intraday scalping, or guaranteed signal generation.
+        The system looks for short-term trade candidates using two separate views: <span class="highlight">Swing</span> and
+        <span class="highlight">Intraday</span>. Swing mode uses daily candles and is designed for multi-day trade monitoring.
+        Intraday mode uses 15-minute candles and is designed for faster active-trade monitoring.
+      </p>
+      <p>
+        The objective is not to produce guaranteed recommendations. The objective is to filter a broad stock universe into a smaller,
+        risk-aware list of candidates with trend alignment, relative strength or weakness, volume confirmation, controlled volatility,
+        and a defined entry, stop, and target.
       </p>
     </div>
 
     <div class="section">
-      <h2>Primary Scoring Factors</h2>
-
+      <h2>2. Scanner Modes</h2>
       <div class="grid">
         <div class="mini-card">
-          <h3>Trend Strength</h3>
+          <h3>Swing Mode</h3>
           <p>
-            Preference is given to stocks showing constructive price structure and positive short-term trend behavior.
+            Uses daily candles. Best suited for 1-to-10 trading-day setups where the trigger, stop-loss, and target are monitored after entry.
           </p>
         </div>
-
         <div class="mini-card">
-          <h3>Momentum</h3>
+          <h3>Intraday Mode</h3>
           <p>
-            The scanner looks for securities showing recent upward price acceleration or improving relative behavior.
+            Uses 15-minute candles. Best suited for faster monitoring where the setup must be closer to the trigger and supported by stronger near-term volume.
           </p>
         </div>
-
         <div class="mini-card">
-          <h3>Volume Confirmation</h3>
+          <h3>Indian Scanner</h3>
           <p>
-            Higher-than-normal participation helps confirm whether a move is supported by meaningful market interest.
+            Uses NIFTY as the primary benchmark. If index data is unavailable, the scanner may use a NIFTY proxy such as NIFTYBEES.
           </p>
         </div>
-
         <div class="mini-card">
-          <h3>Risk Structure</h3>
+          <h3>USA Scanner</h3>
           <p>
-            Setups are evaluated for downside risk, stop-loss distance, and whether the expected upside justifies the trade.
+            Uses SPY as the broad-market benchmark. Stocks with earnings expected within the blackout window are excluded from fresh picks.
           </p>
         </div>
       </div>
     </div>
 
     <div class="section">
-      <h2>Priority Grading</h2>
+      <h2>3. Market Bias Filter</h2>
       <p>
-        Scanner results are ranked using a total score. Higher-scoring names should generally represent cleaner technical setups,
-        stronger momentum, better volume behavior, and more attractive risk-reward balance.
+        The scanner first checks the broad-market benchmark. A supportive benchmark allows more directional setups.
+        A weak benchmark filters against bullish setups. A mixed benchmark requires stronger trade quality.
       </p>
-
       <ul>
-        <li><strong>Highest Priority:</strong> Strongest candidates based on the scanner score.</li>
-        <li><strong>Medium Priority:</strong> Good candidates, but with some weaker confirmation factors.</li>
-        <li><strong>Low Priority:</strong> Watchlist candidates that may require additional confirmation.</li>
-        <li><strong>Avoid / No Trade:</strong> Weak score, poor setup quality, or unattractive risk-reward.</li>
+        <li><strong>Bullish market bias:</strong> Scanner prefers BUY setups only.</li>
+        <li><strong>Bearish market bias:</strong> Scanner prefers SELL setups only.</li>
+        <li><strong>Mixed market bias:</strong> Scanner only allows stronger qualified setups with stricter confirmation.</li>
       </ul>
     </div>
 
     <div class="section">
-      <h2>Risk Management Logic</h2>
-      <p>
-        The scanner is intended to highlight possible opportunities, but the user must still control position size,
-        stop-loss discipline, market exposure, and portfolio concentration.
-      </p>
+      <h2>4. Setup Scoring Factors</h2>
+      <div class="grid">
+        <div class="mini-card">
+          <h3>Trend Alignment</h3>
+          <p>
+            The model checks whether price is aligned with short-term and medium-term moving averages and whether the trend slope supports the trade direction.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Relative Strength</h3>
+          <p>
+            BUY setups should outperform the benchmark. SELL setups should underperform the benchmark. This helps avoid weak ideas in strong markets and strong names in weak markets.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Volume Quality</h3>
+          <p>
+            Setups receive higher quality treatment only when participation is above normal. Low-volume moves are less reliable and are filtered more aggressively.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>RSI Zone</h3>
+          <p>
+            The scanner avoids extreme readings. It prefers healthier momentum zones rather than chasing severely overbought or oversold moves.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Volatility Control</h3>
+          <p>
+            ATR is used to check whether the stock has enough movement potential without being too erratic for controlled position sizing.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Trigger Proximity</h3>
+          <p>
+            The scanner favors candidates close to their entry trigger. Ideas too far from entry are less actionable and may be filtered out.
+          </p>
+        </div>
+      </div>
+    </div>
 
+    <div class="section">
+      <h2>5. Conviction Score: What It Means</h2>
+      <p>
+        The conviction score is a <span class="highlight">setup-quality ranking</span>, not a win probability. A score of 94 does not mean a 94% chance of winning.
+        It means that, compared with the scanned universe, the setup has strong technical quality under the model’s rules.
+      </p>
+      <div class="warning">
+        No live trade is allowed to display a 100 conviction score. The scanners intentionally avoid 100 scores because no trade is loss-proof.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Score Range</th>
+              <th>Priority Label</th>
+              <th>Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>90–94</td>
+              <td>Highest Priority</td>
+              <td>Strongest technical setups of the scan, still requiring trigger confirmation.</td>
+            </tr>
+            <tr>
+              <td>84–89</td>
+              <td>Medium Priority</td>
+              <td>Good setups, but with one or more weaker confirmation factors.</td>
+            </tr>
+            <tr>
+              <td>78–83</td>
+              <td>Low Priority</td>
+              <td>Watchlist candidates that require stricter confirmation before consideration.</td>
+            </tr>
+            <tr>
+              <td>Below 78</td>
+              <td>Rejected / No Trade</td>
+              <td>Does not meet the model’s minimum setup-quality threshold.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        To prevent the dashboard from becoming crowded, only the top-ranked ideas per mode can receive the Highest Priority label.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>6. Entry, Stop-Loss, and Target Logic</h2>
+      <p>
+        Entries are trigger-based. A BUY setup requires the price to break above the entry trigger. A SELL setup requires the price to break below the entry trigger.
+        The model favors confirmation rather than blind entry.
+      </p>
       <ul>
-        <li>Every trade idea should have a defined stop-loss before entry.</li>
-        <li>Risk per trade should remain limited and pre-decided.</li>
-        <li>Trade candidates should not be entered blindly only because they rank highly.</li>
-        <li>Market-wide weakness can override individual stock strength.</li>
+        <li><strong>Entry:</strong> Trigger level based on price action near the latest candle.</li>
+        <li><strong>Stop-loss:</strong> Uses structure-aware ATR placement, normally beyond a recent swing high or swing low with a volatility buffer.</li>
+        <li><strong>Target:</strong> Uses risk-based target logic, generally around 2R in the newer professional model.</li>
+        <li><strong>Position size:</strong> Adjusts based on risk per trade and maximum allocation rules.</li>
+      </ul>
+      <div class="warning">
+        Wider structure-aware stops may reduce position quantity. That is intentional. The goal is to control rupee/dollar risk, not force the same share quantity on every setup.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>7. Performance Tracking</h2>
+      <p>
+        The performance dashboard reads the scanner logs and tracks whether an idea remained pending, triggered, hit stop-loss first, or hit target first.
+        This creates a feedback loop to evaluate whether the scanner logic is producing useful candidates over time.
+      </p>
+      <ul>
+        <li><strong>Current Price:</strong> Latest available price when the scanner workflow runs.</li>
+        <li><strong>Stop Away:</strong> Distance from current price to stop-loss, shown in price and percentage terms.</li>
+        <li><strong>Target Away:</strong> Distance from current price to target, shown in price and percentage terms.</li>
+        <li><strong>First Hit:</strong> Indicates whether stop or target was touched first after entry.</li>
+        <li><strong>Result:</strong> Win, Loss, Active, Pending, or Ambiguous depending on the available candle data.</li>
+        <li><strong>R:</strong> Risk-adjusted outcome, where +1R means the trade gained one unit of planned risk and -1R means the stop-loss was hit.</li>
       </ul>
     </div>
 
     <div class="section">
-      <h2>Performance Validation</h2>
+      <h2>8. Same-Candle Ambiguity</h2>
       <p>
-        The performance dashboard is designed to test whether the scanners are useful over time.
-        A 10-trading-day window helps evaluate whether top-ranked candidates actually move in the expected direction.
+        Sometimes the available candle data may show that entry, stop, and target were all touched within the same candle.
+        In that case, the scanner may not know the exact sequence of events. Instead of incorrectly marking it as a definite win or loss,
+        the performance tracker may label it as ambiguous.
       </p>
+      <p>
+        This is especially important for daily candles and sometimes for 15-minute candles, because candle OHLC data does not always reveal the order in which price levels were touched.
+      </p>
+    </div>
 
+    <div class="section">
+      <h2>9. Practical Use Rules</h2>
       <ul>
-        <li>Track top picks from each scan.</li>
-        <li>Measure return after the tracking period.</li>
-        <li>Record whether the target or stop-loss was hit.</li>
-        <li>Compare high-priority picks against lower-priority picks.</li>
-        <li>Use rolling results to improve the scanner rules.</li>
+        <li>Do not treat the scanner as an automatic buy/sell engine.</li>
+        <li>Do not enter before the trigger level breaks with confirmation.</li>
+        <li>Do not interpret conviction score as probability of profit.</li>
+        <li>Review liquidity, news, earnings, macro events, and broader market conditions before acting.</li>
+        <li>Respect position sizing. A wider stop should reduce quantity, not increase risk.</li>
+        <li>Use the performance dashboard to identify whether the model is improving or deteriorating over time.</li>
       </ul>
     </div>
 
     <div class="section">
-      <h2>Important Limitations</h2>
+      <h2>10. Key Limitations</h2>
       <p>
-        No scanner can remove market risk. Technical setups can fail because of broader market weakness,
-        earnings news, macro events, liquidity shifts, or sudden sentiment changes.
+        No scanner can remove market risk. Technical setups can fail because of earnings, macro news, sudden sector rotation,
+        liquidity shocks, false breakouts, gaps, and broad-market reversals. Data from public sources such as Yahoo Finance may be delayed,
+        unavailable, or revised.
       </p>
-
-      <ul>
-        <li>The scanner should be treated as a filtering system, not a prediction engine.</li>
-        <li>Results may change significantly from one market session to another.</li>
-        <li>Backtesting and live forward-testing are both required before relying on any model.</li>
-        <li>Human judgment remains necessary for final trade selection.</li>
-      </ul>
+      <p>
+        The scanner should be treated as a structured research assistant, not a substitute for professional financial advice,
+        discretionary judgment, or independent risk management.
+      </p>
     </div>
 
     <div class="disclaimer">
-      <strong>Disclaimer:</strong> This methodology is for educational and analytical purposes only.
-      It is not financial advice, investment advice, or a recommendation to buy or sell any security.
+      <strong>Disclaimer:</strong> This methodology and all scanner outputs are for educational and analytical purposes only.
+      They are not financial advice, investment advice, or a recommendation to buy or sell any security.
+      No scanner score represents certainty, and no trade is guaranteed or loss-proof.
     </div>
-
   </div>
 </body>
 </html>
