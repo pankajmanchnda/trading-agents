@@ -56,7 +56,7 @@
       color: #94a3b8;
       font-size: 17px;
       line-height: 1.65;
-      max-width: 920px;
+      max-width: 950px;
     }
 
     .section {
@@ -199,7 +199,9 @@
       <h1>🧠 Trading Scanner Methodology</h1>
       <p>
         This methodology explains how the Indian and USA scanners identify, score, rank, and track short-term trading ideas.
-        The scanners are designed as research and filtering tools. They do not predict certainty, and they do not remove market risk.
+        The latest scanner build adds professional confirmation filters including RS-line slope, intraday VWAP alignment,
+        candle-quality confirmation, compression checks, gap-risk filters, liquidity filters, and target-path realism.
+        The scanners are research and filtering tools. They do not predict certainty, and they do not remove market risk.
       </p>
     </div>
 
@@ -212,8 +214,8 @@
       </p>
       <p>
         The objective is not to produce guaranteed recommendations. The objective is to filter a broad stock universe into a smaller,
-        risk-aware list of candidates with trend alignment, relative strength or weakness, volume confirmation, controlled volatility,
-        and a defined entry, stop, and target.
+        risk-aware list of candidates with trend alignment, benchmark-relative strength or weakness, improving RS slope, volume confirmation,
+        controlled volatility, quality candle structure, gap-risk control, and a defined entry, stop, and target.
       </p>
     </div>
 
@@ -224,12 +226,14 @@
           <h3>Swing Mode</h3>
           <p>
             Uses daily candles. Best suited for 1-to-10 trading-day setups where the trigger, stop-loss, and target are monitored after entry.
+            It emphasizes trend alignment, relative strength slope, compression/base quality, gap risk, and target realism.
           </p>
         </div>
         <div class="mini-card">
           <h3>Intraday Mode</h3>
           <p>
-            Uses 15-minute candles. Best suited for faster monitoring where the setup must be closer to the trigger and supported by stronger near-term volume.
+            Uses 15-minute candles. Best suited for faster monitoring where the setup must be near the trigger, supported by stronger volume,
+            and aligned with VWAP flow.
           </p>
         </div>
         <div class="mini-card">
@@ -261,7 +265,56 @@
     </div>
 
     <div class="section">
-      <h2>4. Setup Scoring Factors</h2>
+      <h2>4. Expert Confirmation Layer</h2>
+      <p>
+        The latest build adds an extra expert-quality layer before a stock is allowed into the final candidate list.
+        This layer is designed to reduce false breakouts, reduce stop-loss-first outcomes, and avoid trades that look attractive mathematically
+        but are not clean enough structurally.
+      </p>
+      <div class="grid">
+        <div class="mini-card">
+          <h3>RS-Line Slope</h3>
+          <p>
+            BUY setups require relative strength to be improving versus the benchmark. SELL setups require relative weakness to be increasing.
+            This is stronger than using one static relative-strength number.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Intraday VWAP Filter</h3>
+          <p>
+            Intraday BUY setups should be above VWAP with VWAP not falling. Intraday SELL setups should be below VWAP with VWAP not rising.
+            This avoids fighting the dominant intraday price-volume flow.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Candle Quality</h3>
+          <p>
+            The scanner avoids weak reversal-like candles and prefers cleaner candle bodies that support the trade direction.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Compression Check</h3>
+          <p>
+            Swing mode favors cleaner setups where recent range is not expanding aggressively before entry. This helps avoid chasing stretched moves.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Gap-Risk Filter</h3>
+          <p>
+            The scanner penalizes or rejects names with excessive recent gap behavior or a large current gap, because these setups are more vulnerable to sudden stop-outs.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Target-Path Realism</h3>
+          <p>
+            A trade must have a realistic path to its target. BUY targets should not be blocked too closely by recent resistance, and SELL targets should not be blocked too closely by recent support.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>5. Setup Scoring Factors</h2>
       <div class="grid">
         <div class="mini-card">
           <h3>Trend Alignment</h3>
@@ -272,13 +325,19 @@
         <div class="mini-card">
           <h3>Relative Strength</h3>
           <p>
-            BUY setups should outperform the benchmark. SELL setups should underperform the benchmark. This helps avoid weak ideas in strong markets and strong names in weak markets.
+            BUY setups should outperform the benchmark. SELL setups should underperform the benchmark. The latest version also checks whether that relative performance is improving.
           </p>
         </div>
         <div class="mini-card">
           <h3>Volume Quality</h3>
           <p>
             Setups receive higher quality treatment only when participation is above normal. Low-volume moves are less reliable and are filtered more aggressively.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3>Liquidity</h3>
+          <p>
+            The scanner checks average traded value or average dollar volume so that thin or unreliable setups are less likely to enter the final list.
           </p>
         </div>
         <div class="mini-card">
@@ -299,11 +358,17 @@
             The scanner favors candidates close to their entry trigger. Ideas too far from entry are less actionable and may be filtered out.
           </p>
         </div>
+        <div class="mini-card">
+          <h3>Extension Control</h3>
+          <p>
+            The scanner avoids trades that are already too far extended from the moving-average structure, reducing the risk of buying or shorting after the easy move has already happened.
+          </p>
+        </div>
       </div>
     </div>
 
     <div class="section">
-      <h2>5. Conviction Score: What It Means</h2>
+      <h2>6. Conviction Score: What It Means</h2>
       <p>
         The conviction score is a <span class="highlight">setup-quality ranking</span>, not a win probability. A score of 94 does not mean a 94% chance of winning.
         It means that, compared with the scanned universe, the setup has strong technical quality under the model’s rules.
@@ -351,15 +416,17 @@
     </div>
 
     <div class="section">
-      <h2>6. Entry, Stop-Loss, and Target Logic</h2>
+      <h2>7. Entry, Stop-Loss, and Target Logic</h2>
       <p>
         Entries are trigger-based. A BUY setup requires the price to break above the entry trigger. A SELL setup requires the price to break below the entry trigger.
         The model favors confirmation rather than blind entry.
       </p>
       <ul>
         <li><strong>Entry:</strong> Trigger level based on price action near the latest candle.</li>
+        <li><strong>Confirmation:</strong> The scanner notes that entry is preferred after candle-close confirmation, especially to reduce false trigger touches.</li>
         <li><strong>Stop-loss:</strong> Uses structure-aware ATR placement, normally beyond a recent swing high or swing low with a volatility buffer.</li>
         <li><strong>Target:</strong> Uses risk-based target logic, generally around 2R in the newer professional model.</li>
+        <li><strong>Target realism:</strong> The scanner checks whether nearby resistance or support makes the 2R target less realistic.</li>
         <li><strong>Position size:</strong> Adjusts based on risk per trade and maximum allocation rules.</li>
       </ul>
       <div class="warning">
@@ -368,7 +435,7 @@
     </div>
 
     <div class="section">
-      <h2>7. Performance Tracking</h2>
+      <h2>8. Performance Tracking</h2>
       <p>
         The performance dashboard reads the scanner logs and tracks whether an idea remained pending, triggered, hit stop-loss first, or hit target first.
         This creates a feedback loop to evaluate whether the scanner logic is producing useful candidates over time.
@@ -384,7 +451,7 @@
     </div>
 
     <div class="section">
-      <h2>8. Same-Candle Ambiguity</h2>
+      <h2>9. Same-Candle Ambiguity</h2>
       <p>
         Sometimes the available candle data may show that entry, stop, and target were all touched within the same candle.
         In that case, the scanner may not know the exact sequence of events. Instead of incorrectly marking it as a definite win or loss,
@@ -396,11 +463,12 @@
     </div>
 
     <div class="section">
-      <h2>9. Practical Use Rules</h2>
+      <h2>10. Practical Use Rules</h2>
       <ul>
         <li>Do not treat the scanner as an automatic buy/sell engine.</li>
         <li>Do not enter before the trigger level breaks with confirmation.</li>
         <li>Do not interpret conviction score as probability of profit.</li>
+        <li>For intraday setups, avoid fighting VWAP alignment.</li>
         <li>Review liquidity, news, earnings, macro events, and broader market conditions before acting.</li>
         <li>Respect position sizing. A wider stop should reduce quantity, not increase risk.</li>
         <li>Use the performance dashboard to identify whether the model is improving or deteriorating over time.</li>
@@ -408,7 +476,59 @@
     </div>
 
     <div class="section">
-      <h2>10. Key Limitations</h2>
+      <h2>11. What Changed in the Latest Expert Logic</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Upgrade</th>
+              <th>Purpose</th>
+              <th>Expected Impact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>RS Slope</td>
+              <td>Confirms improving leadership or weakness versus benchmark.</td>
+              <td>Better quality BUY/SELL direction selection.</td>
+            </tr>
+            <tr>
+              <td>Intraday VWAP</td>
+              <td>Keeps active trades aligned with intraday price-volume flow.</td>
+              <td>Fewer entries against dominant session flow.</td>
+            </tr>
+            <tr>
+              <td>Candle Quality</td>
+              <td>Avoids weak or reversal-like candles near trigger.</td>
+              <td>Fewer false breakout-style entries.</td>
+            </tr>
+            <tr>
+              <td>Compression</td>
+              <td>Helps identify cleaner setups before expansion.</td>
+              <td>Less chasing of extended moves.</td>
+            </tr>
+            <tr>
+              <td>Gap Risk</td>
+              <td>Filters names with excessive gap behavior.</td>
+              <td>Lower risk of sudden stop-loss hits.</td>
+            </tr>
+            <tr>
+              <td>Liquidity / Dollar Value</td>
+              <td>Avoids thin or unreliable trade candidates.</td>
+              <td>Improved execution reliability.</td>
+            </tr>
+            <tr>
+              <td>Target-Path Realism</td>
+              <td>Checks whether nearby resistance/support blocks the target.</td>
+              <td>More realistic reward expectations.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>12. Key Limitations</h2>
       <p>
         No scanner can remove market risk. Technical setups can fail because of earnings, macro news, sudden sector rotation,
         liquidity shocks, false breakouts, gaps, and broad-market reversals. Data from public sources such as Yahoo Finance may be delayed,
