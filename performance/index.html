@@ -25,7 +25,7 @@
     }
 
     .container {
-      max-width: 1250px;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
@@ -57,7 +57,7 @@
       color: #94a3b8;
       font-size: 16px;
       line-height: 1.6;
-      max-width: 900px;
+      max-width: 950px;
     }
 
     .subtitle {
@@ -114,7 +114,15 @@
       margin-bottom: 22px;
     }
 
+    .priority-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
     .metric-card,
+    .priority-card,
     .section {
       background: #111827;
       border: 1px solid #243041;
@@ -122,7 +130,8 @@
       padding: 20px;
     }
 
-    .metric-card h3 {
+    .metric-card h3,
+    .priority-card h3 {
       color: #94a3b8;
       font-size: 14px;
       margin-bottom: 8px;
@@ -135,10 +144,59 @@
       margin-bottom: 6px;
     }
 
-    .metric-card .note {
+    .metric-card .note,
+    .priority-card .note {
       color: #64748b;
       font-size: 13px;
       line-height: 1.4;
+    }
+
+    .priority-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .priority-title h2 {
+      font-size: 20px;
+    }
+
+    .priority-pill {
+      border: 1px solid #243041;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #cbd5e1;
+      background: #0b1220;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .bucket-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .bucket-metric {
+      background: #0b1220;
+      border: 1px solid #243041;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .bucket-metric span {
+      display: block;
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .bucket-metric b {
+      font-size: 22px;
+      color: #e5e7eb;
     }
 
     .section {
@@ -173,7 +231,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1450px;
+      min-width: 1550px;
       font-size: 13px;
     }
 
@@ -244,6 +302,18 @@
       color: #c4b5fd;
     }
 
+    .pill-highest {
+      color: #fbbf24;
+    }
+
+    .pill-medium {
+      color: #93c5fd;
+    }
+
+    .pill-low {
+      color: #c4b5fd;
+    }
+
     .empty {
       color: #94a3b8;
       padding: 12px 0;
@@ -267,8 +337,13 @@
       line-height: 1.6;
     }
 
-    @media (max-width: 900px) {
-      .summary-grid {
+    @media (max-width: 1000px) {
+      .summary-grid,
+      .priority-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .bucket-grid {
         grid-template-columns: repeat(2, 1fr);
       }
 
@@ -277,12 +352,14 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       body {
         padding: 25px 14px;
       }
 
-      .summary-grid {
+      .summary-grid,
+      .priority-grid,
+      .bucket-grid {
         grid-template-columns: 1fr;
       }
 
@@ -305,8 +382,8 @@
       <h1>📊 Scanner Performance Dashboard</h1>
       <p>
         This page tracks scanner-generated trade ideas from the Indian and USA scanners.
-        It measures whether each idea triggered, whether stop-loss or target was hit first,
-        and whether the scanners are producing repeatable, risk-aware candidates.
+        It now separates Highest Priority ideas from Medium/Low Priority ideas so we can judge
+        whether the best-ranked setups are actually outperforming the broader watchlist.
       </p>
       <div class="subtitle" id="generatedLine">Loading latest scanner logs...</div>
       <div id="debugBox" class="debug-box"></div>
@@ -370,14 +447,46 @@
       </div>
     </div>
 
+    <div class="priority-grid">
+      <div class="priority-card">
+        <div class="priority-title">
+          <h2>Highest Priority Performance</h2>
+          <span class="priority-pill">Core strategy</span>
+        </div>
+        <div class="bucket-grid">
+          <div class="bucket-metric"><span>Total Ideas</span><b id="highestTotal">--</b></div>
+          <div class="bucket-metric"><span>Closed Win Rate</span><b id="highestWinRate">--</b></div>
+          <div class="bucket-metric"><span>Average R</span><b id="highestAvgR">--</b></div>
+          <div class="bucket-metric"><span>Closed W/L</span><b id="highestClosed">--</b></div>
+        </div>
+        <div class="note">Only rows classified as Highest Priority.</div>
+      </div>
+
+      <div class="priority-card">
+        <div class="priority-title">
+          <h2>Medium + Low Priority Performance</h2>
+          <span class="priority-pill">Secondary watchlist</span>
+        </div>
+        <div class="bucket-grid">
+          <div class="bucket-metric"><span>Total Ideas</span><b id="medLowTotal">--</b></div>
+          <div class="bucket-metric"><span>Closed Win Rate</span><b id="medLowWinRate">--</b></div>
+          <div class="bucket-metric"><span>Average R</span><b id="medLowAvgR">--</b></div>
+          <div class="bucket-metric"><span>Closed W/L</span><b id="medLowClosed">--</b></div>
+        </div>
+        <div class="note">Medium and Low Priority rows grouped together.</div>
+      </div>
+    </div>
+
     <div class="section">
       <h2>Filters</h2>
       <p>
-        Use these filters to review scanner performance by market, mode, and trade outcome.
+        Use these filters to review scanner performance by market, mode, priority, and trade outcome.
       </p>
 
       <div class="filter-wrap">
         <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="highest">Highest Priority</button>
+        <button class="filter-btn" data-filter="mediumlow">Medium/Low</button>
         <button class="filter-btn" data-filter="india">India</button>
         <button class="filter-btn" data-filter="usa">USA</button>
         <button class="filter-btn" data-filter="swing">Swing</button>
@@ -393,6 +502,7 @@
       <h2>Combined Trade Log</h2>
       <p>
         Current Price, Stop Away, Target Away, First Hit, Hit Date, Result, R, and Days are updated by the scanners whenever their workflows run.
+        Priority is now shown and can be filtered so Highest Priority can be judged separately from Medium/Low ideas.
       </p>
 
       <div class="table-wrap">
@@ -403,6 +513,7 @@
               <th>Date</th>
               <th>Mode</th>
               <th>Rank</th>
+              <th>Priority</th>
               <th>Stock</th>
               <th>Signal</th>
               <th>Conviction</th>
@@ -424,7 +535,7 @@
           </thead>
           <tbody id="tradeTableBody">
             <tr>
-              <td colspan="21" class="empty">Loading performance logs...</td>
+              <td colspan="22" class="empty">Loading performance logs...</td>
             </tr>
           </tbody>
         </table>
@@ -568,12 +679,45 @@
       return text;
     }
 
+    function inferPriority(row, market) {
+      const explicitPriority = safeText(row.Priority).trim();
+      if (explicitPriority) return explicitPriority;
+
+      const score = numberValue(row.Conviction);
+
+      if (!Number.isFinite(score)) return "Unclassified";
+
+      const mode = safeText(row.Mode).toLowerCase();
+
+      // India Swing was intentionally loosened after fallback calibration.
+      // USA and Intraday keep the stricter historical threshold.
+      if (market === "India" && mode === "swing") {
+        if (score >= 88) return "Highest Priority";
+        if (score >= 82) return "Medium Priority";
+        if (score >= 74) return "Low Priority";
+      }
+
+      if (score >= 90) return "Highest Priority";
+      if (score >= 84) return "Medium Priority";
+      if (score >= 78) return "Low Priority";
+
+      return "Unclassified";
+    }
+
+    function priorityGroup(priority) {
+      const p = safeText(priority).toLowerCase();
+      if (p.includes("highest")) return "highest";
+      if (p.includes("medium") || p.includes("low")) return "mediumlow";
+      return "other";
+    }
+
     function normalizeRow(row, market) {
-      return {
+      const normalized = {
         Market: market,
         Date: row.Date || "",
         Mode: row.Mode || "",
         Rank: row.Rank || "",
+        Priority: row.Priority || "",
         Stock: row.Stock || row.Symbol || "",
         Signal: row.Signal || "",
         Conviction: row.Conviction || "",
@@ -592,6 +736,9 @@
         Days: row.Days || "",
         Notes: row.Notes || ""
       };
+
+      normalized.Priority = inferPriority(normalized, market);
+      return normalized;
     }
 
     function classifyStatus(trade) {
@@ -627,6 +774,14 @@
       if (type === "pending") return "status-pending";
 
       return "status-neutral";
+    }
+
+    function priorityClass(trade) {
+      const group = priorityGroup(trade.Priority);
+      if (group === "highest") return "pill-highest";
+      if (group === "mediumlow" && safeText(trade.Priority).toLowerCase().includes("medium")) return "pill-medium";
+      if (group === "mediumlow") return "pill-low";
+      return "";
     }
 
     function escapeHTML(value) {
@@ -709,19 +864,10 @@
       showDebug();
     }
 
-    function updateSummary(trades) {
-      const total = trades.length;
-      const india = trades.filter(t => t.Market === "India").length;
-      const usa = trades.filter(t => t.Market === "USA").length;
-      const swing = trades.filter(t => safeText(t.Mode).toLowerCase() === "swing").length;
-      const intraday = trades.filter(t => safeText(t.Mode).toLowerCase() === "intraday").length;
-
+    function closedStats(trades) {
       const wins = trades.filter(t => classifyStatus(t) === "win");
       const losses = trades.filter(t => classifyStatus(t) === "loss");
       const closed = wins.length + losses.length;
-
-      const active = trades.filter(t => classifyStatus(t) === "active").length;
-      const pending = trades.filter(t => classifyStatus(t) === "pending").length;
 
       const rValues = trades
         .filter(t => classifyStatus(t) === "win" || classifyStatus(t) === "loss")
@@ -736,15 +882,49 @@
         ? ((wins.length / closed) * 100).toFixed(1) + "%"
         : "--";
 
+      return {
+        wins: wins.length,
+        losses: losses.length,
+        closed,
+        winRate,
+        avgR
+      };
+    }
+
+    function updateBucket(prefix, trades) {
+      const stats = closedStats(trades);
+      document.getElementById(prefix + "Total").textContent = trades.length;
+      document.getElementById(prefix + "WinRate").textContent = stats.winRate;
+      document.getElementById(prefix + "AvgR").textContent = stats.avgR;
+      document.getElementById(prefix + "Closed").textContent = stats.wins + " / " + stats.losses;
+    }
+
+    function updateSummary(trades) {
+      const total = trades.length;
+      const india = trades.filter(t => t.Market === "India").length;
+      const usa = trades.filter(t => t.Market === "USA").length;
+      const swing = trades.filter(t => safeText(t.Mode).toLowerCase() === "swing").length;
+      const intraday = trades.filter(t => safeText(t.Mode).toLowerCase() === "intraday").length;
+
+      const stats = closedStats(trades);
+      const active = trades.filter(t => classifyStatus(t) === "active").length;
+      const pending = trades.filter(t => classifyStatus(t) === "pending").length;
+
+      const highest = trades.filter(t => priorityGroup(t.Priority) === "highest");
+      const medLow = trades.filter(t => priorityGroup(t.Priority) === "mediumlow");
+
       document.getElementById("totalTrades").textContent = total;
-      document.getElementById("winRate").textContent = winRate;
-      document.getElementById("avgR").textContent = avgR;
+      document.getElementById("winRate").textContent = stats.winRate;
+      document.getElementById("avgR").textContent = stats.avgR;
       document.getElementById("openPending").textContent = active + " / " + pending;
 
       document.getElementById("indiaTrades").textContent = india;
       document.getElementById("usaTrades").textContent = usa;
       document.getElementById("swingTrades").textContent = swing;
       document.getElementById("intradayTrades").textContent = intraday;
+
+      updateBucket("highest", highest);
+      updateBucket("medLow", medLow);
     }
 
     function filteredTrades() {
@@ -752,8 +932,11 @@
         const market = safeText(trade.Market).toLowerCase();
         const mode = safeText(trade.Mode).toLowerCase();
         const status = classifyStatus(trade);
+        const pGroup = priorityGroup(trade.Priority);
 
         if (currentFilter === "all") return true;
+        if (currentFilter === "highest") return pGroup === "highest";
+        if (currentFilter === "mediumlow") return pGroup === "mediumlow";
         if (currentFilter === "india") return market === "india";
         if (currentFilter === "usa") return market === "usa";
         if (currentFilter === "swing") return mode === "swing";
@@ -772,13 +955,14 @@
       const rows = filteredTrades();
 
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="21" class="empty">No trades found for this filter. If totals are also zero, check the debug messages above.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="22" class="empty">No trades found for this filter. If totals are also zero, check the debug messages above.</td></tr>';
         return;
       }
 
       tbody.innerHTML = rows.map(trade => {
         const marketClass = trade.Market === "India" ? "pill-india" : "pill-usa";
         const modeClass = safeText(trade.Mode).toLowerCase() === "intraday" ? "pill-intraday" : "pill-swing";
+        const priorityCss = priorityClass(trade);
         const status = safeText(trade.Status);
         const result = resultLabel(trade);
 
@@ -788,6 +972,7 @@
             <td>${escapeHTML(trade.Date)}</td>
             <td><span class="pill ${modeClass}">${escapeHTML(trade.Mode)}</span></td>
             <td>${escapeHTML(trade.Rank)}</td>
+            <td><span class="pill ${priorityCss}">${escapeHTML(trade.Priority)}</span></td>
             <td><strong>${escapeHTML(trade.Stock)}</strong></td>
             <td>${escapeHTML(trade.Signal)}</td>
             <td>${escapeHTML(trade.Conviction)}</td>
@@ -813,7 +998,7 @@
     function updateGeneratedLine() {
       const now = new Date();
       document.getElementById("generatedLine").textContent =
-        "Loaded at " + now.toLocaleString() + " · Reading India + USA scanner logs";
+        "Loaded at " + now.toLocaleString() + " · Reading India + USA scanner logs · Priority-separated performance enabled";
     }
 
     document.querySelectorAll(".filter-btn").forEach(button => {
