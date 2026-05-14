@@ -221,6 +221,16 @@
       gap: 10px;
       flex-wrap: wrap;
       margin: 14px 0 6px;
+      align-items: center;
+    }
+
+    .filter-label {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-left: 8px;
     }
 
     .table-wrap {
@@ -480,21 +490,34 @@
     <div class="section">
       <h2>Filters</h2>
       <p>
-        Use these filters to review scanner performance by market, mode, priority, and trade outcome.
+        Use these filters in combination. For example: <b>USA + Swing</b>, <b>India + Intraday</b>,
+        <b>Highest Priority + Swing</b>, or <b>USA + Medium/Low + Losses</b>.
       </p>
 
-      <div class="filter-wrap">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="highest">Highest Priority</button>
-        <button class="filter-btn" data-filter="mediumlow">Medium/Low</button>
-        <button class="filter-btn" data-filter="india">India</button>
-        <button class="filter-btn" data-filter="usa">USA</button>
-        <button class="filter-btn" data-filter="swing">Swing</button>
-        <button class="filter-btn" data-filter="intraday">Intraday</button>
-        <button class="filter-btn" data-filter="wins">Wins</button>
-        <button class="filter-btn" data-filter="losses">Losses</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-        <button class="filter-btn" data-filter="pending">Pending</button>
+      <div class="filter-wrap grouped-filters">
+        <button class="filter-btn active" data-group="reset" data-value="all">All</button>
+
+        <span class="filter-label">Market</span>
+        <button class="filter-btn" data-group="market" data-value="india">India</button>
+        <button class="filter-btn" data-group="market" data-value="usa">USA</button>
+
+        <span class="filter-label">Mode</span>
+        <button class="filter-btn" data-group="mode" data-value="swing">Swing</button>
+        <button class="filter-btn" data-group="mode" data-value="intraday">Intraday</button>
+
+        <span class="filter-label">Priority</span>
+        <button class="filter-btn" data-group="priority" data-value="highest">Highest Priority</button>
+        <button class="filter-btn" data-group="priority" data-value="mediumlow">Medium/Low</button>
+
+        <span class="filter-label">Outcome</span>
+        <button class="filter-btn" data-group="outcome" data-value="wins">Wins</button>
+        <button class="filter-btn" data-group="outcome" data-value="losses">Losses</button>
+        <button class="filter-btn" data-group="outcome" data-value="active">Active</button>
+        <button class="filter-btn" data-group="outcome" data-value="pending">Pending</button>
+      </div>
+
+      <div class="small-note" id="activeFilterLine">
+        Active filter: All trades
       </div>
     </div>
 
@@ -587,7 +610,12 @@
     ];
 
     let allTrades = [];
-    let currentFilter = "all";
+    let currentFilters = {
+      market: "all",
+      mode: "all",
+      priority: "all",
+      outcome: "all"
+    };
     let debugMessages = [];
 
     function showDebug() {
@@ -927,6 +955,32 @@
       updateBucket("medLow", medLow);
     }
 
+    function activeFilterText() {
+      const parts = [];
+
+      if (currentFilters.market !== "all") parts.push(currentFilters.market.toUpperCase());
+      if (currentFilters.mode !== "all") parts.push(currentFilters.mode === "swing" ? "Swing" : "Intraday");
+      if (currentFilters.priority !== "all") parts.push(currentFilters.priority === "highest" ? "Highest Priority" : "Medium/Low");
+      if (currentFilters.outcome !== "all") {
+        const labels = {
+          wins: "Wins",
+          losses: "Losses",
+          active: "Active",
+          pending: "Pending"
+        };
+        parts.push(labels[currentFilters.outcome] || currentFilters.outcome);
+      }
+
+      return parts.length ? parts.join(" + ") : "All trades";
+    }
+
+    function updateActiveFilterLine() {
+      const line = document.getElementById("activeFilterLine");
+      if (line) {
+        line.textContent = "Active filter: " + activeFilterText();
+      }
+    }
+
     function filteredTrades() {
       return allTrades.filter(trade => {
         const market = safeText(trade.Market).toLowerCase();
@@ -934,23 +988,23 @@
         const status = classifyStatus(trade);
         const pGroup = priorityGroup(trade.Priority);
 
-        if (currentFilter === "all") return true;
-        if (currentFilter === "highest") return pGroup === "highest";
-        if (currentFilter === "mediumlow") return pGroup === "mediumlow";
-        if (currentFilter === "india") return market === "india";
-        if (currentFilter === "usa") return market === "usa";
-        if (currentFilter === "swing") return mode === "swing";
-        if (currentFilter === "intraday") return mode === "intraday";
-        if (currentFilter === "wins") return status === "win";
-        if (currentFilter === "losses") return status === "loss";
-        if (currentFilter === "active") return status === "active";
-        if (currentFilter === "pending") return status === "pending";
+        if (currentFilters.market !== "all" && market !== currentFilters.market) return false;
+        if (currentFilters.mode !== "all" && mode !== currentFilters.mode) return false;
+        if (currentFilters.priority !== "all" && pGroup !== currentFilters.priority) return false;
+
+        if (currentFilters.outcome !== "all") {
+          if (currentFilters.outcome === "wins" && status !== "win") return false;
+          if (currentFilters.outcome === "losses" && status !== "loss") return false;
+          if (currentFilters.outcome === "active" && status !== "active") return false;
+          if (currentFilters.outcome === "pending" && status !== "pending") return false;
+        }
 
         return true;
       });
     }
 
     function renderTable() {
+      updateActiveFilterLine();
       const tbody = document.getElementById("tradeTableBody");
       const rows = filteredTrades();
 
@@ -1001,12 +1055,63 @@
         "Loaded at " + now.toLocaleString() + " · Reading India + USA scanner logs · Priority-separated performance enabled";
     }
 
+    function resetFilters() {
+      currentFilters = {
+        market: "all",
+        mode: "all",
+        priority: "all",
+        outcome: "all"
+      };
+
+      document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+      const allButton = document.querySelector('.filter-btn[data-group="reset"]');
+      if (allButton) allButton.classList.add("active");
+
+      updateActiveFilterLine();
+      renderTable();
+    }
+
+    function setGroupedFilter(group, value, button) {
+      const allButton = document.querySelector('.filter-btn[data-group="reset"]');
+      if (allButton) allButton.classList.remove("active");
+
+      // Clicking the already-active value toggles that group back to all.
+      if (currentFilters[group] === value) {
+        currentFilters[group] = "all";
+        button.classList.remove("active");
+      } else {
+        currentFilters[group] = value;
+        document.querySelectorAll('.filter-btn[data-group="' + group + '"]').forEach(btn => {
+          btn.classList.remove("active");
+        });
+        button.classList.add("active");
+      }
+
+      const hasAnyFilter =
+        currentFilters.market !== "all" ||
+        currentFilters.mode !== "all" ||
+        currentFilters.priority !== "all" ||
+        currentFilters.outcome !== "all";
+
+      if (!hasAnyFilter && allButton) {
+        allButton.classList.add("active");
+      }
+
+      updateActiveFilterLine();
+      renderTable();
+    }
+
     document.querySelectorAll(".filter-btn").forEach(button => {
       button.addEventListener("click", function () {
-        document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-        this.classList.add("active");
-        currentFilter = this.dataset.filter;
-        renderTable();
+        const group = this.dataset.group;
+        const value = this.dataset.value;
+
+        if (group === "reset") {
+          resetFilters();
+          return;
+        }
+
+        setGroupedFilter(group, value, this);
       });
     });
 
